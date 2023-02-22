@@ -1,7 +1,4 @@
 use yew::prelude::*;
-use yew_router::prelude::use_navigator;
-
-use crate::app::Route;
 
 #[function_component(Home)]
 pub fn home() -> Html {
@@ -12,8 +9,8 @@ pub fn home() -> Html {
                   <h1 class="text-5xl font-bold">{"Hello Guys."}</h1>
                   <p class="py-6">
                       {"
-                            This application intends to download file(s) in BitTorrent protocol.
-                        "}
+                        This application intends to download file(s) in BitTorrent protocol.
+                      "}
                   </p>
                   <button class="btn btn-primary">{"Get Start"}</button>
               </div>

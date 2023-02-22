@@ -1,3 +1,12 @@
+//! TODO: after the web designing, we should change all into the tauri interface support.
+//! 
+//! transfer `FileDetails` -> `Metainfo`
+//! 
+//! the data: Vec<u8> could be extracted.
+//! 
+//! the file_type: used to limit file type which only allow .torrent extensions.
+//! 
+//! And then should support the `TorrentStats`, `PieceStats` and `ThruputStats`.
 use std::collections::HashMap;
 
 use gloo::file::callbacks::FileReader;
@@ -11,10 +20,6 @@ pub struct FileDetails {
   name: String,
   file_type: String,
   data: Vec<u8>,
-}
-
-struct TorrentProgress {
-  progress: usize,
 }
 
 pub enum EngineMsg {
@@ -111,7 +116,7 @@ impl Component for TorrentEngine {
               if show_active {
                   <table class="table w-full">
                       <tbody>
-                          { for self.files .iter() .map(Self::view_file) }
+                          { for self.files.iter().map(Self::view_file) }
                       </tbody>
                   </table>
               }

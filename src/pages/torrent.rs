@@ -1,4 +1,4 @@
-use crate::utiles::TorrentEngine;
+use crate::torrent_engine::TorrentEngine;
 use yew::prelude::*;
 #[function_component(Function)]
 pub fn function() -> Html {
