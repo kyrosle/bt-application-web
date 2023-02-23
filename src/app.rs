@@ -1,5 +1,6 @@
-use std::rc::Rc;
+use std::{collections::HashMap, rc::Rc};
 
+use gloo::console::log;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -10,8 +11,11 @@ use crate::{
 
 #[derive(Clone, PartialEq)]
 pub struct AppState {
-  pub trackers_list: Vec<Tracker>,
-  pub change_trackers_list: Callback<usize>,
+  /// store the trackers globally.
+  pub trackers_list: HashMap<String, Tracker>,
+  /// a callback function enable the child or grandchild components to change the
+  /// trackers_list element above.
+  pub change_trackers_list: Callback<String>,
 }
 
 pub struct App {
@@ -19,7 +23,7 @@ pub struct App {
 }
 
 pub enum AppMsg {
-  ChangeTrackersList(usize),
+  ChangeTrackersList(String),
 }
 
 impl Component for App {
@@ -27,12 +31,44 @@ impl Component for App {
   type Properties = ();
 
   fn create(ctx: &Context<Self>) -> Self {
-    let change_trackers_list = ctx.link().callback(AppMsg::ChangeTrackersList);
+    // FOR TEST:
+    let trackers_list =
+      (1..21).into_iter().map(Tracker::create_for_test);
+
+    let trackers_list = trackers_list.into_iter().fold(
+      HashMap::new(),
+      |mut m, t| {
+        m.insert(t.name.clone(), t);
+        m
+      },
+    );
+
+    let change_trackers_list =
+      ctx.link().callback(AppMsg::ChangeTrackersList);
     App {
       state: Rc::new(AppState {
-        trackers_list: vec![Tracker::create_for_test(), Tracker::create_for_test()],
+        trackers_list,
         change_trackers_list,
       }),
+    }
+  }
+
+  fn update(
+    &mut self,
+    _ctx: &Context<Self>,
+    msg: Self::Message,
+  ) -> bool {
+    match msg {
+      AppMsg::ChangeTrackersList(name) => {
+        let shared_state = Rc::make_mut(&mut self.state);
+        shared_state
+          .trackers_list
+          .get_mut(&name)
+          .unwrap()
+          .toggle();
+        log!("toggle");
+        true
+      }
     }
   }
 

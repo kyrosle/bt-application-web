@@ -707,6 +707,7 @@ dependencies = [
  "gloo",
  "js-sys",
  "log",
+ "percent-encoding",
  "url",
  "wasm-logger",
  "web-sys",

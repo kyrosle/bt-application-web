@@ -26,7 +26,11 @@ impl Component for NavBar {
     }
   }
 
-  fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+  fn update(
+    &mut self,
+    ctx: &Context<Self>,
+    msg: Self::Message,
+  ) -> bool {
     match msg {
       NavBarMsg::ToggleNavbar => true,
       NavBarMsg::SearchTextChanged(text) => {
@@ -35,9 +39,8 @@ impl Component for NavBar {
       }
       NavBarMsg::SearchText => {
         let navigator = ctx.link().navigator().unwrap();
-        navigator.push(&Route::SearchText {
-          text: self.search_text.clone(),
-        });
+        let text = self.search_text.clone();
+        navigator.push(&Route::SearchText { text });
         true
       }
     }
@@ -66,13 +69,19 @@ impl NavBar {
       }
     };
 
-    let onblur = link.callback(move |_| NavBarMsg::SearchText);
+    let onblur =
+      link.callback(move |_| NavBarMsg::SearchText);
 
     let onkeypress =
-      link.batch_callback(|e: KeyboardEvent| (e.key() == "Enter").then_some(NavBarMsg::SearchText));
+      link.batch_callback(|e: KeyboardEvent| {
+        (e.key() == "Enter")
+          .then_some(NavBarMsg::SearchText)
+      });
 
     let onchange = link.callback(|e: Event| {
-      let text = e.target_unchecked_into::<HtmlInputElement>().value();
+      let text = e
+        .target_unchecked_into::<HtmlInputElement>()
+        .value();
       NavBarMsg::SearchTextChanged(text)
     });
 

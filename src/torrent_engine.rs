@@ -1,17 +1,19 @@
 //! TODO: after the web designing, we should change all into the tauri interface support.
-//! 
+//!
 //! transfer `FileDetails` -> `Metainfo`
-//! 
+//!
 //! the data: Vec<u8> could be extracted.
-//! 
+//!
 //! the file_type: used to limit file type which only allow .torrent extensions.
-//! 
+//!
 //! And then should support the `TorrentStats`, `PieceStats` and `ThruputStats`.
 use std::collections::HashMap;
 
 use gloo::file::callbacks::FileReader;
 use gloo::file::File;
-use web_sys::{DragEvent, Event, FileList, HtmlInputElement};
+use web_sys::{
+  DragEvent, Event, FileList, HtmlInputElement,
+};
 use yew::html::TargetCast;
 use yew::prelude::*;
 
@@ -45,7 +47,11 @@ impl Component for TorrentEngine {
     }
   }
 
-  fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+  fn update(
+    &mut self,
+    ctx: &Context<Self>,
+    msg: Self::Message,
+  ) -> bool {
     match msg {
       EngineMsg::FileLoaded(file_name, file_type, data) => {
         self.files.push(FileDetails {
@@ -68,13 +74,16 @@ impl Component for TorrentEngine {
             let link = ctx.link().clone();
             let file_name = file_name.clone();
 
-            gloo::file::callbacks::read_as_bytes(&file, move |res| {
-              link.send_message(EngineMsg::FileLoaded(
-                file_name,
-                file_type,
-                res.expect("failed to read file"),
-              ))
-            })
+            gloo::file::callbacks::read_as_bytes(
+              &file,
+              move |res| {
+                link.send_message(EngineMsg::FileLoaded(
+                  file_name,
+                  file_type,
+                  res.expect("failed to read file"),
+                ))
+              },
+            )
           };
           self.readers.insert(file_name, task);
         }
@@ -111,7 +120,7 @@ impl Component for TorrentEngine {
             Self::upload_files(input.files())
           })}
         />
-      
+
           <div class="overflow-x-auto" style="overflow-y: auto;height: 70vh;margin: 15px 0;">
               if show_active {
                   <table class="table w-full">

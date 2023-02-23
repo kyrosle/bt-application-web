@@ -22,30 +22,46 @@ impl Component for Slider {
   fn create(ctx: &Context<Self>) -> Self {
     let (state, _listener) = ctx
       .link()
-      .context::<Rc<AppState>>(ctx.link().callback(SliderMsg::ContextChanged))
+      .context::<Rc<AppState>>(
+        ctx.link().callback(SliderMsg::ContextChanged),
+      )
       .expect("context to be set");
     Self { state, _listener }
   }
 
-  fn view(&self, _ctx: &Context<Self>) -> Html {
+  fn update(
+    &mut self,
+    ctx: &Context<Self>,
+    msg: Self::Message,
+  ) -> bool {
+    match msg {
+      SliderMsg::ContextChanged(state) => {
+        self.state = state;
+        true
+      }
+    }
+  }
+
+  fn view(&self, ctx: &Context<Self>) -> Html {
+    let trackers_list = self.state.trackers_list.clone();
+
+    let trackers_list = trackers_list
+      .into_iter()
+      .map(|(_, t)| {
+        t.display(self.state.change_trackers_list.clone())
+      })
+      .collect::<Vec<_>>();
     html! {
       <ul class="menu p-4 w-80 bg-base-100 text-base-content">
-        {self.show_trackers()}
+        <label style="text-align: center;">{"Tracker Select"}</label>
+        <div style="display: flex; flex-direction: column;height: 75vh; width: 80vw; overflow-y: auto; overflow-x: hidden;">
+          if trackers_list.is_empty() {
+            <label>{"Not Found"}</label>
+          } else {
+            { for trackers_list }
+          }
+        </div>
       </ul>
     }
-  }
-}
-
-impl Slider {
-  fn show_trackers(&self) -> Html {
-    html! {
-      {for self.state.trackers_list.iter().map(show_tracker)}
-    }
-  }
-}
-
-fn show_tracker(tracker: &Tracker) -> Html {
-  html! {
-    <li>{"Tracker Url here."}</li>
   }
 }
