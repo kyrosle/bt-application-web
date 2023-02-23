@@ -9,6 +9,8 @@ pub enum Route {
   Home,
   #[at("/search")]
   Search,
+  #[at("/search/:text")]
+  SearchText { text: String },
   #[at("/download")]
   Download,
   #[at("/moreinfo")]
@@ -24,7 +26,10 @@ pub fn switch(routes: Route) -> Html {
       html! { <Home/> }
     }
     Route::Search => {
-      html! { <h1>{"Search"}</h1> }
+      html! { <Search text={"".to_string()} /> }
+    }
+    Route::SearchText { text } => {
+      html! { <Search {text}/> }
     }
     Route::Download => {
       html! { <Function/> }

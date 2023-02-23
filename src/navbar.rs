@@ -1,12 +1,19 @@
 use crate::{icons::*, routes::*, slider::Slider};
-use gloo::history::{BrowserHistory, History};
+use gloo::{
+  console::log,
+  history::{BrowserHistory, History},
+};
+use web_sys::HtmlInputElement;
 use yew::{html::Scope, prelude::*};
 use yew_router::prelude::*;
 
-pub struct NavBar;
+pub struct NavBar {
+  search_text: String,
+}
 pub enum NavBarMsg {
   ToggleNavbar,
-  Search,
+  SearchTextChanged(String),
+  SearchText,
 }
 impl Component for NavBar {
   type Message = NavBarMsg;
@@ -14,17 +21,25 @@ impl Component for NavBar {
   type Properties = ();
 
   fn create(_ctx: &Context<Self>) -> Self {
-    Self
+    Self {
+      search_text: String::new(),
+    }
   }
 
   fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
     match msg {
       NavBarMsg::ToggleNavbar => true,
-      NavBarMsg::Search =>  {
+      NavBarMsg::SearchTextChanged(text) => {
+        self.search_text = text;
+        false
+      }
+      NavBarMsg::SearchText => {
         let navigator = ctx.link().navigator().unwrap();
-        navigator.push(&Route::Search);
+        navigator.push(&Route::SearchText {
+          text: self.search_text.clone(),
+        });
         true
-      } ,
+      }
     }
   }
 
@@ -41,7 +56,7 @@ impl NavBar {
     let history = BrowserHistory::new();
     let history = history.location();
     let history = history.path();
-    
+
     // select the button active, the pattern should same as the route url pattern.
     let select_index = |pattern: &str| -> Classes {
       if history == pattern {
@@ -50,6 +65,17 @@ impl NavBar {
         classes!("")
       }
     };
+
+    let onblur = link.callback(move |_| NavBarMsg::SearchText);
+
+    let onkeypress =
+      link.batch_callback(|e: KeyboardEvent| (e.key() == "Enter").then_some(NavBarMsg::SearchText));
+
+    let onchange = link.callback(|e: Event| {
+      let text = e.target_unchecked_into::<HtmlInputElement>().value();
+      NavBarMsg::SearchTextChanged(text)
+    });
+
     html! {
       <>
         <div class="drawer" style="height: 90vh;">
@@ -59,8 +85,8 @@ impl NavBar {
               <label for="my-drawer" class="btn btn-ghost">
                 <MenuIcon/>
               </label>
-              <input type="text" placeholder="BitTorrent Search" class="input input-bordered input-sm max-w-xs" />
-              <button class="btn btn-ghost btn-xs" style="margin:10px;" onclick={link.callback(|_| NavBarMsg::Search)}>{"Search"}</button>
+              <input type="text" placeholder="BitTorrent Search" {onchange} {onkeypress} {onblur} class="input input-bordered input-sm max-w-xs" />
+              <button class="btn btn-ghost btn-xs" style="margin:10px;" onclick={link.callback(|_| NavBarMsg::SearchText)}>{"Search"}</button>
             </div>
             <div class="navbar bg-base-100">
               <div class="btm-nav" onclick={link.callback(|_| NavBarMsg::ToggleNavbar)}>

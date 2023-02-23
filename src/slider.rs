@@ -27,7 +27,7 @@ impl Component for Slider {
     Self { state, _listener }
   }
 
-  fn view(&self, ctx: &Context<Self>) -> Html {
+  fn view(&self, _ctx: &Context<Self>) -> Html {
     html! {
       <ul class="menu p-4 w-80 bg-base-100 text-base-content">
         {self.show_trackers()}
