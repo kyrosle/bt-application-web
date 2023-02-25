@@ -28,7 +28,7 @@ impl Tracker {
     let onclick = f.reform(move |_| name.clone());
 
     html! {
-      <div style="display:flex; justify-content: space-between; margin: 5px;">
+      <div style="display:flex; justify-content: space-between; margin: 5px; padding: 5px;">
         <label>{&self.name}</label>
         // <label>{&self.url}</label>
         <input type="checkbox" class="toggle" checked={self.enabled} {onclick}/>

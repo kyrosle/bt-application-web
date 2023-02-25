@@ -31,7 +31,7 @@ impl Component for Slider {
 
   fn update(
     &mut self,
-    ctx: &Context<Self>,
+    _ctx: &Context<Self>,
     msg: Self::Message,
   ) -> bool {
     match msg {
@@ -42,24 +42,26 @@ impl Component for Slider {
     }
   }
 
-  fn view(&self, ctx: &Context<Self>) -> Html {
+  fn view(&self, _ctx: &Context<Self>) -> Html {
     let trackers_list = self.state.trackers_list.clone();
 
     let trackers_list = trackers_list
-      .into_iter()
-      .map(|(_, t)| {
+      .into_values()
+      .map(|t| {
         t.display(self.state.change_trackers_list.clone())
       })
       .collect::<Vec<_>>();
     html! {
       <ul class="menu p-4 w-80 bg-base-100 text-base-content">
-        <label style="text-align: center;">{"Tracker Select"}</label>
-        <div style="display: flex; flex-direction: column;height: 75vh; width: 80vw; overflow-y: auto; overflow-x: hidden;">
-          if trackers_list.is_empty() {
-            <label>{"Not Found"}</label>
-          } else {
-            { for trackers_list }
-          }
+        <div>
+          <label>{"Tracker Select"}</label>
+          <div style="display: flex; flex-direction: column;height: 75vh; overflow-y: auto; overflow-x: hidden;">
+            if trackers_list.is_empty() {
+              <label>{"Not Found"}</label>
+            } else {
+              { for trackers_list }
+            }
+          </div>
         </div>
       </ul>
     }

@@ -66,7 +66,7 @@ impl Component for App {
           .get_mut(&name)
           .unwrap()
           .toggle();
-        log!("toggle");
+        log!(name, "toggle");
         true
       }
     }

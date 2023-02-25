@@ -123,7 +123,7 @@ impl Component for TorrentEngine {
 
           <div class="overflow-x-auto" style="overflow-y: auto;height: 70vh;margin: 15px 0;">
               if show_active {
-                  <table class="table w-full">
+                  <table class="table table-zebra w-full">
                       <tbody>
                           { for self.files.iter().map(Self::view_file) }
                       </tbody>
